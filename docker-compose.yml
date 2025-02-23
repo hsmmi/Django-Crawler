@@ -1,11 +1,9 @@
 networks:
-  default:
-    external:
-      name: django_crawler_network
-
+  django_crawler_network:
+    driver: overlay
 services:
   web:
-    build: .
+    image: django-crawler:latest
     ports:
       - "8000:8000"
     depends_on:
@@ -22,8 +20,11 @@ services:
       - db_password
     volumes:
       - .:/app
-    # command: ["poetry", "run", "gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi"]
-    command: ["/app/.venv/bin/gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi"]
+      - /app/.venv
+    command: ["poetry", "run", "gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi"]
+    # command: ["/app/.venv/bin/gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi"]
+    networks:
+      - django_crawler_network
 
 
   db:
@@ -38,6 +39,8 @@ services:
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
     ports:
       - "5432:5432"
+    networks:
+      - django_crawler_network
 
 secrets:
   db_name:
