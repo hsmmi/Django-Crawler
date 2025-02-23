@@ -1,0 +1,48 @@
+networks:
+  default:
+    external:
+      name: django_crawler_network
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_NAME_FILE: /run/secrets/db_name
+      DATABASE_USER_FILE: /run/secrets/db_user
+      DATABASE_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_name
+      - db_user
+      - db_password
+    volumes:
+      - .:/app
+    # command: ["poetry", "run", "gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi"]
+    command: ["/app/.venv/bin/gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi"]
+
+
+  db:
+    image: postgres:16
+    secrets:
+      - db_name
+      - db_user
+      - db_password
+    environment:
+      POSTGRES_DB_FILE: /run/secrets/db_name
+      POSTGRES_USER_FILE: /run/secrets/db_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    ports:
+      - "5432:5432"
+
+secrets:
+  db_name:
+    external: true
+  db_user:
+    external: true
+  db_password:
+    external: true

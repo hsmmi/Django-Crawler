@@ -1,0 +1,32 @@
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore Conda environments & virtual environments
+.venv/
+.env/
+env/
+venv/
+
+# Ignore logs and debug files
+logs/
+*.log
+
+# Ignore local databases
+db.sqlite3
+db.sqlite3-journal
+
+# Ignore Docker-related files
+Dockerfile
+docker-compose.yml
+
+# Ignore Git and editor files
+.git/
+.gitignore
+*.swp
+*.swo
+*.swn
+.idea/
+.vscode/
