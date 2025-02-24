@@ -39,9 +39,14 @@ services:
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
     ports:
       - "5432:5432"
+    volumes:
+    - postgres_data:/var/lib/postgresql/data 
     networks:
       - django_crawler_network
 
+volumes:
+  postgres_data:
+  
 secrets:
   db_name:
     external: true
