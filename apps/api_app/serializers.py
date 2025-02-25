@@ -5,6 +5,7 @@ from apps.crawler_app.models import Product, Category
 class ProductSerializer(serializers.ModelSerializer):
     category_id = serializers.PrimaryKeyRelatedField(source="category", read_only=True)
     category_name = serializers.CharField(source="category.name", read_only=True)
+    images = serializers.ListField(child=serializers.URLField(), required=False)
 
     class Meta:
         model = Product

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Documentation</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'swagger-ui/swagger-ui.css' %}">
+</head>
+<body>
+    <div id="swagger-ui"></div>
+    <script src="{% static 'swagger-ui/swagger-ui-bundle.min.js' %}"></script>
+    <script src="{% static 'swagger-ui/swagger-ui-standalone-preset.min.js' %}"></script>
+    <script>
+        window.onload = function() {
+            const ui = SwaggerUIBundle({
+                url: "{% url 'schema-json' %}",
+                dom_id: '#swagger-ui',
+                presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+                layout: "StandaloneLayout"
+            });
+        };
+    </script>
+</body>
+</html>

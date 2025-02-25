@@ -76,11 +76,58 @@ To stop and remove all services:
 ```sh
 docker stack rm django-crawler
 ```
+To remove unused volumes and networks:
+```sh
+docker system prune -a
+```
+---
+
+## 🚀 Performance Optimizations
+- Bulk insert and update operations have been implemented to significantly improve database performance.
+- Crawler now processes products efficiently using `bulk_create` and `bulk_update` to reduce query load.
+
+---
+
+## 📜 Logging & Debugging
+Logs are stored in `logs/` and can be accessed via:
+```sh
+# View the latest logs
+tail -f logs/django.log
+
+# View the latest warnings and errors only
+tail -f logs/django_warn.log
+```
+
+This **helps debugging** and makes log access clear.
+
+---
+
+## **Document the Improved Category Handling**
+Since you've improved **category parent-child relationships**, document how categories work.
+
+## 🏷️ Category Structure
+- Categories are now **hierarchical**, supporting unlimited depth (e.g., `decoration > bedroom > bed`).
+- The system automatically **creates missing parent categories** when a new category is added.
+
+### Example:
+| Category Path | Parent |
+|--------------|--------|
+| `decoration > bedroom > bed` | `decoration > bedroom` |
+| `office-furniture > table > conference-table` | `office-furniture > table` |
+
+```sh
+# Fetch all categories via API
+curl -X GET http://localhost:8000/api/categories/
+```
+
+---
+
+
+
+---
 
 ## 🎯 Next Steps
 Would you like to:
-- **Automate deployment with GitHub Actions?**
-- **Configure logging and monitoring?**
-- **Enhance the crawler with scheduling using Celery?**
-
-Let us know what’s next! 🚀
+- **Optimize query indexing for PostgreSQL?**
+- **Implement caching with Redis to speed up repeated queries?**
+- **Improve API response times using Django REST Framework optimizations?**

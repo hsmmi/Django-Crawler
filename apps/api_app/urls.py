@@ -8,10 +8,10 @@ router.register(r"products", ProductViewSet, basename="product")
 router.register(r"categories", CategoryViewSet, basename="category")
 
 urlpatterns = [
-    path("api/", include(router.urls)),  # Register all router-based viewsets
-    path(
-        "api/categories/<slug:slug>/",
-        CategoryDetailView.as_view(),
-        name="category-detail",
-    ),
+    path("", include(router.urls)),  # Register all router-based viewsets
+    # path(
+    #     "api/categories/<slug:slug>/",
+    #     CategoryDetailView.as_view(),
+    #     name="category-detail",
+    # ),
 ]
