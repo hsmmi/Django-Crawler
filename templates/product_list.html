@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}📋 لیست محصولات{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">📋 لیست محصولات</h1>
+
+    <div class="product-grid">
+        {% for product in products %}
+            <div class="product-item">
+                <a href="{% url 'product_detail' product.id %}">
+                    <img src="{{ product.images.0 }}" alt="{{ product.title }}" class="product-image">
+                </a>
+                <h3 class="product-title">
+                    <a href="{% url 'product_detail' product.id %}">{{ product.title }}</a>
+                </h3>
+                <p class="product-price">💰 قیمت: <strong>{{ product.discount_price }} تومان</strong></p>
+                <div class="product-actions">
+                    <a href="{% url 'edit_product' product.id %}" class="btn edit-btn">✏️ ویرایش</a>
+                    <a href="{% url 'delete_product' product.id %}" class="btn delete-btn">🗑️ حذف</a>
+                </div>
+            </div>
+        {% empty %}
+            <p class="no-products">❌ هیچ محصولی یافت نشد!</p>
+        {% endfor %}
+    </div>
+
+    <a href="{% url 'add_product' %}" class="btn add-btn">➕ افزودن محصول</a>
+
+<style>
+    .page-title {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .product-item {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 15px;
+        text-align: center;
+        background: #f9f9f9;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .product-item:hover {
+        transform: translateY(-5px);
+    }
+
+    .product-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .product-title {
+        margin: 10px 0;
+    }
+
+    .product-price {
+        font-size: 16px;
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .product-actions {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 10px;
+    }
+
+    .btn {
+        padding: 8px 12px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        transition: 0.2s;
+    }
+
+    .edit-btn {
+        background-color: #ffc107;
+        color: black;
+    }
+
+    .edit-btn:hover {
+        background-color: #e0a800;
+    }
+
+    .delete-btn {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .delete-btn:hover {
+        background-color: #c82333;
+    }
+
+    .add-btn {
+        display: block;
+        width: fit-content;
+        margin: 20px auto;
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+    }
+
+    .add-btn:hover {
+        background-color: #0056b3;
+    }
+
+    .no-products {
+        text-align: center;
+        font-size: 18px;
+        color: #dc3545;
+        font-weight: bold;
+        margin-top: 20px;
+    }
+</style>
+
+{% endblock %}

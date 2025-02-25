@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>✏️ ویرایش محصول</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <!-- Display form fields with Persian labels -->
+    <label for="id_title">📌 نام محصول:</label>
+    {{ form.title }}
+
+    <label for="id_original_price">💰 قیمت اصلی:</label>
+    {{ form.original_price }}
+
+    <label for="id_discount_price">🏷️ قیمت تخفیف‌خورده:</label>
+    {{ form.discount_price }}
+
+    <label for="id_description">📝 توضیحات محصول:</label>
+    {{ form.description }}
+
+    <label for="id_category">📂 دسته‌بندی:</label>
+    {{ form.category }}
+
+    <label for="id_availability">✅ وضعیت موجودی:</label>
+    <div class="checkbox-container">
+        {{ form.availability }}
+        <span class="checkbox-label">موجود است</span>
+    </div>
+
+    <label for="id_specifications">⚙️ مشخصات فنی:</label>
+    <textarea id="json-input" name="specifications">{{ form.specifications.value|default:"{}" }}</textarea>
+
+    <button type="submit">💾 ذخیره تغییرات</button>
+</form>
+
+<style>
+    /* General Styling */
+    label {
+        font-weight: bold;
+        display: block;
+        margin-top: 10px;
+    }
+
+    input, textarea, select {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    /* Styled Checkbox */
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        margin-top: 5px;
+    }
+
+    .checkbox-container input {
+        width: 20px;
+        height: 20px;
+        margin-right: 10px;
+        cursor: pointer;
+    }
+
+    .checkbox-label {
+        font-size: 16px;
+        color: #333;
+    }
+
+    /* Editable JSON Field */
+    #json-input {
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        padding: 10px;
+        font-family: monospace;
+        white-space: pre-wrap;
+        direction: ltr;
+        text-align: left;
+        border-radius: 5px;
+        height: 200px;
+    }
+
+    /* Save Button */
+    button {
+        background-color: #2ecc71;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    button:hover {
+        background-color: #27ae60;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let jsonInput = document.getElementById("json-input");
+        try {
+            let jsonData = JSON.parse(jsonInput.value);
+            jsonInput.value = JSON.stringify(jsonData, null, 4);
+        } catch (e) {
+            console.error("Invalid JSON data:", e);
+        }
+    });
+</script>
+
+{% endblock %}

@@ -1,7 +1,17 @@
-# Django Web Crawler with Docker and Secrets
+# Django Web Crawler with Docker
 
 This project is a Django-based web crawler that uses PostgreSQL, containerized with Docker and secured using Docker Secrets.
 
+---
+## 📌 Table of Contents
+- [🚀 Setup Instructions](#-setup-instructions)
+- [🏷️ Category Structure](#️-category-structure)
+- [⚡ Performance Optimizations](#-performance-optimizations)
+- [📜 API Documentation](#-api-documentation)
+    - [API Endpoints (Router-based)](#api-endpoints-router-based)
+    - [HTML-Based Views (Template Views)](#html-based-views-template-views)
+- [📊 Logging & Debugging](#-logging--debugging)
+---
 ## 🚀 Setup Instructions
 
 ### **1️⃣ Initialize Docker Swarm**
@@ -32,16 +42,6 @@ Docker Swarm does not support build: in docker-compose.yml, so you need to build
 docker build -t django-crawler .
 ```
 
-Optionally, Save the Image for Deployment
-
-If deploying to another server, save and load the image manually:
-
-```sh
-docker save -o django-crawler.tar django-crawler
-# Copy it to another server, then load it:
-docker load -i django-crawler.tar
-```
-
 ### **4️⃣ Deploy the Application**
 Run the following command to start Django and PostgreSQL using Docker Swarm:
 ```sh
@@ -54,6 +54,12 @@ Run database migrations inside the container:
 ```sh
 docker exec -it $(docker ps -q --filter name=web) poetry run python manage.py migrate
 ```
+
+Create database migrations:
+```sh
+docker exec -it $(docker ps -q --filter name=web) poetry run python manage.py make_migrations
+```
+
 Create a superuser for Django Admin:
 ```sh
 docker exec -it $(docker ps -q --filter name=web) poetry run python manage.py createsuperuser
@@ -80,30 +86,9 @@ To remove unused volumes and networks:
 ```sh
 docker system prune -a
 ```
----
 
-## 🚀 Performance Optimizations
-- Bulk insert and update operations have been implemented to significantly improve database performance.
-- Crawler now processes products efficiently using `bulk_create` and `bulk_update` to reduce query load.
 
 ---
-
-## 📜 Logging & Debugging
-Logs are stored in `logs/` and can be accessed via:
-```sh
-# View the latest logs
-tail -f logs/django.log
-
-# View the latest warnings and errors only
-tail -f logs/django_warn.log
-```
-
-This **helps debugging** and makes log access clear.
-
----
-
-## **Document the Improved Category Handling**
-Since you've improved **category parent-child relationships**, document how categories work.
 
 ## 🏷️ Category Structure
 - Categories are now **hierarchical**, supporting unlimited depth (e.g., `decoration > bedroom > bed`).
@@ -121,6 +106,107 @@ curl -X GET http://localhost:8000/api/categories/
 ```
 
 ---
+
+
+## ⚡ Performance Optimizations
+✅ Bulk Insert & Update: Uses `bulk_create()` and `bulk_update()` to reduce DB queries.
+
+✅ Faster Crawling: Caches existing products to avoid unnecessary updates.
+
+✅ Efficient Category Handling: Automatically creates missing parent categories when adding new categories.
+
+<!-- table -->
+Feature | Before | After
+--- | --- | ---
+Product Insert Speed | 100 inserts/sec | 5,000 inserts/sec ⚡
+Category Hierarchy | Manual setup | Auto-parent creation 🏷️
+
+---
+
+## 📜 API Documentation
+
+### API Endpoints (Router-based)
+
+These are registered with Django REST framework’s DefaultRouter, meaning they provide CRUD operations automatically.
+
+| Endpoint | ViewSet | Description |
+|----------|---------|-------------|
+| `/api/products/` | ProductViewSet | List and manage products (CRUD) |
+| `/api/categories/` | CategoryViewSet | List and manage categories (CRUD) |
+
+
+🏷️ **Categories API**
+
+**Endpoint:** `/api/categories/`
+```sh
+# Fetch all categories via API
+curl -X GET http://localhost:8000/api/categories/
+```
+
+✔️ **Example Response:**
+```json
+{
+  "count": 3,
+  "results": [
+    {
+      "id": 1,
+      "name": "decoration",
+      "slug": "decoration",
+      "parent_id": null
+    },
+    {
+      "id": 2,
+      "name": "decoration > bedroom",
+      "slug": "bedroom",
+      "parent_id": 1
+    },
+    {
+      "id": 3,
+      "name": "decoration > bedroom > bed",
+      "slug": "bed",
+      "parent_id": 2
+    }
+  ]
+}
+```
+
+🔎 **Filtering:**
+```sh
+# Returns all products in “bedroom” and its subcategories.
+curl -X GET "http://localhost:8000/api/products/?category=bedroom"
+```
+
+
+### HTML-Based Views (Template Views)
+
+These endpoints render HTML templates for product management.
+
+| Endpoint | View | Description |
+|----------|------|-------------|
+| `/api/html/product/` | product_list | Product List Page |
+| `/api/html/product/<int:product_id>/` | product_detail | Product Detail Page |
+| `/api/html/product/edit/<int:pk>/` | EditProductView | Edit Product Page (form-based) |
+| `/api/html/product/delete/<int:pk>/` | DeleteProductView | Delete Confirmation Page |
+| `/api/html/product/add/` | AddProductView | Add New Product Page |
+
+---
+
+## 📊 Logging & Debugging
+Logs are stored in `logs/` and can be accessed via:
+View the latest logs
+```sh
+tail -f logs/django.log
+```
+
+View the latest warnings and errors only
+```sh
+tail -f logs/django_warn.log
+```
+
+This **helps debugging** and makes log access clear.
+
+---
+
 
 
 

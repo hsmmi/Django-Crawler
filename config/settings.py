@@ -96,10 +96,12 @@ try:
 
     ROOT_URLCONF = "config.urls"
 
+    print(f"\n\n\n\n\n\n\n\n{[os.path.join(BASE_DIR, "templates")]}\n\n\n\n\n\n\n\n")
+
     TEMPLATES = [
         {
             "BACKEND": "django.template.backends.django.DjangoTemplates",
-            "DIRS": [],
+            "DIRS": [os.path.join(BASE_DIR, "templates")],
             "APP_DIRS": True,
             "OPTIONS": {
                 "context_processors": [

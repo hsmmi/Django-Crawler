@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.title }}{% endblock %}
+
+{% block content %}
+    <div class="product-container">
+        <h1>{{ product.title }}</h1>
+
+        <!-- Product Image Slider -->
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                {% for image in product.images %}
+                    <div class="swiper-slide">
+                        <img src="{{ image }}" alt="{{ product.title }}" class="product-image">
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+
+        <!-- Product Information -->
+        <div class="product-info">
+            <p><strong>🛒 دسته بندی:</strong> {{ product.category|default:"بدون دسته‌بندی" }}</p>
+            <p class="availability">
+                <strong>📦 وضعیت:</strong>
+                {% if product.availability %}
+                    <span class="in-stock">✅ موجود</span>
+                {% else %}
+                    <span class="out-of-stock">❌ ناموجود</span>
+                {% endif %}
+            </p>
+            <p class="price">
+                <del>{{ product.original_price }} تومان</del>
+                <strong>{{ product.discount_price }} تومان</strong>
+            </p>
+            <p class="description">{{ product.description }}</p>
+        </div>
+
+        <!-- Product Specifications -->
+        <div class="specifications">
+            <h3>📌 مشخصات فنی:</h3>
+            {% for category, specs in product.specifications.items %}
+                <h4>{{ category }}</h4>
+                <ul>
+                    {% for key, value in specs.items %}
+                        <li><strong>{{ key }}:</strong> {{ value }}</li>
+                    {% endfor %}
+                </ul>
+            {% endfor %}
+        </div>
+
+        <!-- CRUD Buttons -->
+        <div class="buttons">
+            <a href="{% url 'edit_product' product.id %}" class="btn edit-btn">✏️ ویرایش</a>
+            <button class="btn delete-btn" onclick="openDeleteModal()">🗑️ حذف</button>
+            <!-- <a href="{% url 'add_product' %}" class="btn add-btn">➕ افزودن محصول جدید</a> -->
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal (Hidden by Default) -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <p>⚠️ آیا مطمئن هستید که این محصول حذف شود؟</p>
+            <div class="modal-buttons">
+                <a href="{% url 'delete_product' product.id %}" class="btn confirm-delete">بله، حذف شود</a>
+                <button class="btn cancel-btn" onclick="closeDeleteModal()">لغو</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Swiper.js for Image Slider -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var swiper = new Swiper(".swiper-container", {
+                loop: true,
+                navigation: {
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev"
+                }
+            });
+        });
+
+        function openDeleteModal() {
+            document.getElementById("deleteModal").style.display = "block";
+        }
+
+        function closeDeleteModal() {
+            document.getElementById("deleteModal").style.display = "none";
+        }
+    </script>
+
+    <style>
+        /* Container Styling */
+        .product-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Image Slider */
+        .swiper-container {
+            width: 100%;
+            height: 400px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .swiper-slide {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .swiper-slide img {
+            width: 400px;
+            height: auto;
+            max-height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        /* Product Info */
+        .product-info {
+            font-size: 18px;
+            line-height: 1.8;
+            text-align: right;
+        }
+
+        .price {
+            color: #e74c3c;
+            font-size: 22px;
+        }
+
+        .availability {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        .in-stock {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+
+        .out-of-stock {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        /* Specifications */
+        .specifications {
+            margin-top: 20px;
+        }
+
+        .specifications h4 {
+            color: #3498db;
+            margin-top: 10px;
+        }
+
+        .specifications ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .specifications li {
+            padding: 5px 0;
+            font-size: 16px;
+        }
+
+        /* Buttons */
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .edit-btn { background-color: #3498db; color: white; }
+        .delete-btn { background-color: #e74c3c; color: white; }
+        .confirm-delete { background-color: #c0392b; color: white; }
+        .cancel-btn { background-color: #95a5a6; color: white; }
+        .add-btn { background-color: #2ecc71; color: white; }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            position: fixed; /* Ensures it stays centered */
+            top: 50%; /* Move it down to the center */
+            left: 50%; /* Move it right to the center */
+            transform: translate(-50%, -50%); /* Center it perfectly */
+            width: 300px; /* Set a fixed width */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Show Modal when Active */
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+    </style>
+{% endblock %}
