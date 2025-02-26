@@ -168,6 +168,8 @@ class ProductSpider(scrapy.Spider):
                 }
             )()
 
+            logger.info(f"🔍 Found {len(existing_products)} existing products")
+
             products_to_insert = []
             products_to_update = []
 
@@ -180,6 +182,11 @@ class ProductSpider(scrapy.Spider):
                     products_to_update.append(existing_product)
                 else:
                     products_to_insert.append(Product(**product_data))
+
+            logger.info(
+                f"🔍 Inserting {len(products_to_insert)} new products"
+                f" and updating {len(products_to_update)} existing products"
+            )
 
             if products_to_insert:
                 await sync_to_async(Product.objects.bulk_create)(

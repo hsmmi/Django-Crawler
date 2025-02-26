@@ -8,12 +8,15 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - redis
     environment:
       DATABASE_HOST: db
       DATABASE_PORT: 5432
       DATABASE_NAME_FILE: /run/secrets/db_name
       DATABASE_USER_FILE: /run/secrets/db_user
       DATABASE_PASSWORD_FILE: /run/secrets/db_password
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
     secrets:
       - db_name
       - db_user
@@ -43,6 +46,59 @@ services:
     - postgres_data:/var/lib/postgresql/data 
     networks:
       - django_crawler_network
+    
+  redis:
+    image: redis:7.2
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - django_crawler_network
+
+  celery_worker:
+    image: django-crawler:latest 
+    restart: always
+    command: poetry run celery -A config worker --loglevel=info
+    depends_on:
+      - redis
+      - db
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_NAME_FILE: /run/secrets/db_name
+      DATABASE_USER_FILE: /run/secrets/db_user
+      DATABASE_PASSWORD_FILE: /run/secrets/db_password
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    secrets:
+      - db_name
+      - db_user
+      - db_password
+    networks:
+      - django_crawler_network
+
+  celery_beat:
+    image: django-crawler:latest 
+    restart: always
+    command: poetry run celery -A config beat --loglevel=info
+    depends_on:
+      - redis
+      - db
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_NAME_FILE: /run/secrets/db_name
+      DATABASE_USER_FILE: /run/secrets/db_user
+      DATABASE_PASSWORD_FILE: /run/secrets/db_password
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    secrets:
+      - db_name
+      - db_user
+      - db_password
+    networks:
+      - django_crawler_network
+
 
 volumes:
   postgres_data:

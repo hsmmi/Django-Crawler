@@ -1,10 +1,11 @@
 # Django Web Crawler with Docker
 
-This project is a Django-based web crawler that uses PostgreSQL, containerized with Docker and secured using Docker Secrets.
+This project is a Django-based web crawler that uses PostgreSQL, containerized with Docker and secured using Docker Secrets also includes API endpoints, HTML-based views, and performance optimizations and celery for async tasks.
 
 ---
 ## 📌 Table of Contents
 - [🚀 Setup Instructions](#-setup-instructions)
+- [⚙️ Celery & Task Scheduling](#️-celery--task-scheduling)
 - [🏷️ Category Structure](#️-category-structure)
 - [⚡ Performance Optimizations](#-performance-optimizations)
 - [📜 API Documentation](#-api-documentation)
@@ -72,9 +73,10 @@ docker ps
 ```
 Expected output:
 ```
-CONTAINER ID   IMAGE        STATUS         PORTS
-123abc456def   django_app   Up 2 minutes   0.0.0.0:8000->8000/tcp
-789xyz123ghi   postgres:16  Up 2 minutes   0.0.0.0:5432->5432/tcp
+CONTAINER ID   IMAGE              STATUS         PORTS
+123abc456def   django-crawler     Up 2 minutes   0.0.0.0:8000->8000/tcp
+789xyz123ghi   postgres:16        Up 2 minutes   0.0.0.0:5432->5432/tcp
+456def789xyz   redis:latest       Up 2 minutes   0.0.0.0:6379->6379/tcp
 ```
 
 ### **7️⃣ How to Stop the Application**
@@ -87,6 +89,74 @@ To remove unused volumes and networks:
 docker system prune -a
 ```
 
+---
+
+## ⚙️ Celery & Task Scheduling
+Celery is used for asynchronous crawling task processing, such as web crawling.
+
+### **1️⃣ Install Redis (Required for Celery)**
+
+Ensure that Redis is installed and running.
+
+For macOS (Homebrew)
+```sh
+brew install redis
+brew services start redis
+```
+
+For Linux (Debian/Ubuntu)
+```sh
+sudo apt update && sudo apt install redis-server
+sudo systemctl start redis
+sudo systemctl enable redis
+```
+
+### **2️⃣ Start Celery Worker**
+Run the following command to start the Celery worker:
+```sh
+docker exec -it $(docker ps -q --filter name=web) poetry run celery -A config worker --loglevel=info
+```
+This command starts the Celery worker, which listens for tasks to process.
+
+### **3️⃣ Schedule Periodic Tasks**
+Celery Beat is used to schedule periodic tasks.
+
+To start Celery Beat:
+```sh
+docker exec -it $(docker ps -q --filter name=web) poetry run celery -A config beat --loglevel=info
+```
+
+### **4️⃣ Verify Celery is Running**
+Check that Celery is running and processing tasks.
+```sh
+docker exec -it $(docker ps -q --filter name=web) poetry run celery -A config inspect active
+docker exec -it $(docker ps -q --filter name=web) poetry run celery -A config inspect scheduled
+docker exec -it $(docker ps -q --filter name=web) poetry run celery -A config inspect reserved
+```
+
+if no tasks are scheduled, recheck Redis:
+```sh
+docker exec -it $(docker ps -q --filter name=web) poetry run redis-cli ping  # Should return PONG
+```
+
+### **5️⃣ Running Tasks Manually**
+To manually trigger web scraping, run the following command:
+```sh
+docker exec -it $(docker ps -q --filter name=web) poetry run python manage.py shell
+```
+Then run:
+```python
+from apps.crawler_app.tasks import scrape_products
+scrape_products.delay()
+```
+Check Celery logs for execution.
+
+✅ Celery in Django Admin
+1.	Open Django Admin (/admin/django_celery_beat/periodictask/)
+2.	Add a new periodic task:
+    •	Task Name: scrape_products
+    •	Interval: Choose Every X minutes
+3.	Save and start scheduling tasks automatically.
 
 ---
 
@@ -183,11 +253,11 @@ These endpoints render HTML templates for product management.
 
 | Endpoint | View | Description |
 |----------|------|-------------|
-| `/api/html/product/` | product_list | Product List Page |
-| `/api/html/product/<int:product_id>/` | product_detail | Product Detail Page |
-| `/api/html/product/edit/<int:pk>/` | EditProductView | Edit Product Page (form-based) |
-| `/api/html/product/delete/<int:pk>/` | DeleteProductView | Delete Confirmation Page |
-| `/api/html/product/add/` | AddProductView | Add New Product Page |
+| `/html/product/` | product_list | Product List Page |
+| `/html/product/<int:product_id>/` | product_detail | Product Detail Page |
+| `/html/product/edit/<int:pk>/` | EditProductView | Edit Product Page (form-based) |
+| `/html/product/delete/<int:pk>/` | DeleteProductView | Delete Confirmation Page |
+| `/html/product/add/` | AddProductView | Add New Product Page |
 
 ---
 

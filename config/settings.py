@@ -79,6 +79,7 @@ try:
         "django_filters",
         # Celery
         "celery",
+        "django_celery_beat",
         # Custom apps
         "apps.crawler_app",
         "apps.api_app",
@@ -95,8 +96,6 @@ try:
     ]
 
     ROOT_URLCONF = "config.urls"
-
-    print(f"\n\n\n\n\n\n\n\n{[os.path.join(BASE_DIR, "templates")]}\n\n\n\n\n\n\n\n")
 
     TEMPLATES = [
         {
@@ -122,11 +121,11 @@ try:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": read_secret("DATABASE_NAME") or "esmerdis",
-            "USER": read_secret("DATABASE_USER") or "django_user",
-            "PASSWORD": read_secret("DATABASE_PASSWORD") or "admin",
-            "HOST": read_secret("DATABASE_HOST") or "localhost",
-            "PORT": read_secret("DATABASE_PORT") or "5432",
+            "NAME": read_secret("DATABASE_NAME"),
+            "USER": read_secret("DATABASE_USER"),
+            "PASSWORD": read_secret("DATABASE_PASSWORD"),
+            "HOST": read_secret("DATABASE_HOST"),
+            "PORT": read_secret("DATABASE_PORT"),
         }
     }
 
@@ -178,6 +177,18 @@ try:
         "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
         "PAGE_SIZE": 20,
     }
+
+    # Redis URL for Celery
+    CELERY_BROKER_URL = read_secret("REDIS_URL")
+
+    # Store task results in Redis (optional)
+    CELERY_RESULT_BACKEND = read_secret("REDIS_URL")
+
+    # Import tasks automatically
+    CELERY_IMPORTS = ("apps.crawler_app.tasks",)
+
+    CELERY_ACCEPT_CONTENT = ["json"]
+    CELERY_TASK_SERIALIZER = "json"
 
     logger.info("Django settings loaded successfully!")
 
