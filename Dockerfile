@@ -7,6 +7,8 @@ WORKDIR /app
 # Set environment variables
 SHELL ["/bin/bash", "-c"]
 
+RUN apt-get update && apt-get install -y postgresql-client
+
 # Install Poetry
 RUN pip install poetry
 

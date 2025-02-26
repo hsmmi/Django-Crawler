@@ -24,6 +24,8 @@ services:
     volumes:
       - .:/app
       - /app/.venv
+      - /app/apps/crawler_app/migrations/
+      - /app/apps/api_app/migrations/
     command: ["poetry", "run", "gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi"]
     # command: ["/app/.venv/bin/gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi"]
     networks:

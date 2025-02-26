@@ -30,3 +30,7 @@ docker-compose.yml
 *.swn
 .idea/
 .vscode/
+
+# Ignore migrations
+*/migrations/
+*migrations*
