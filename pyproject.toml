@@ -22,10 +22,20 @@ dependencies = [
     "coreapi (>=2.3.3,<3.0.0)",
     "redis (>=5.2.1,<6.0.0)",
     "django-celery-beat (>=2.7.0,<3.0.0)",
+    "dynamic-scraper (>=1.1.1,<2.0.0)",
 ]
 
 [tool.poetry.dependencies]
 python = ">=3.12,<4.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+pytest-django = "^4.10.0"
+pytest-mock = "^3.14.0"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["tests.py", "test_*.py"]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
