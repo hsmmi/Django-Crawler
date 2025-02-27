@@ -17,7 +17,9 @@ services:
       DATABASE_PASSWORD_FILE: /run/secrets/db_password
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
+      SECRET_KEY: /run/secrets/secret_key
     secrets:
+      - secret_key
       - db_name
       - db_user
       - db_password
@@ -72,7 +74,9 @@ services:
       DATABASE_PASSWORD_FILE: /run/secrets/db_password
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
+      SECRET_KEY: /run/secrets/secret_key
     secrets:
+      - secret_key
       - db_name
       - db_user
       - db_password
@@ -94,7 +98,9 @@ services:
       DATABASE_PASSWORD_FILE: /run/secrets/db_password
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
+      SECRET_KEY: /run/secrets/secret_key
     secrets:
+      - secret_key
       - db_name
       - db_user
       - db_password
@@ -106,6 +112,8 @@ volumes:
   postgres_data:
   
 secrets:
+  secret_key:
+    external: true
   db_name:
     external: true
   db_user:

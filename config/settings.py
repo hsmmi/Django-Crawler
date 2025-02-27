@@ -43,7 +43,6 @@ from utils.logging import logger
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-gidpqmxf-e%8-&%74^((42&a!6-x212fa)*_rd6n**)ay=@@83"
 
 
 ALLOWED_HOSTS = []
@@ -66,6 +65,8 @@ def read_secret(secret_name):
 try:
     # SECURITY WARNING: don't run with debug turned on in production!
     DEBUG = os.getenv("DEBUG", "True").lower() == "true"
+
+    SECRET_KEY = read_secret("SECRET_KEY")
 
     INSTALLED_APPS = [
         "django.contrib.admin",

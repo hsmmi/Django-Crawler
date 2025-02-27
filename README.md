@@ -24,6 +24,7 @@ docker swarm init
 ### **2️⃣ Create Database Secrets**
 Run the following commands to securely store database credentials:
 ```sh
+echo "$SECRET_KEY" | docker secret create secret_key -
 echo "$DATABASE_NAME" | docker secret create db_name -
 echo "$DATABASE_USER" | docker secret create db_user -
 echo "$DATABASE_PASSWORD" | docker secret create db_password -
