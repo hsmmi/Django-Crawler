@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+import sys
 from dotenv import load_dotenv
 from pytz import timezone as tz
 
@@ -127,6 +128,10 @@ try:
             "PASSWORD": read_secret("DATABASE_PASSWORD"),
             "HOST": read_secret("DATABASE_HOST"),
             "PORT": read_secret("DATABASE_PORT"),
+            "TEST": {
+                "NAME": read_secret("TEST_DATABASE_NAME"),
+                "MIRROR": "default",
+            },
         }
     }
 

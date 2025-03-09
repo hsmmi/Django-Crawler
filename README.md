@@ -11,6 +11,7 @@ This project is a Django-based web crawler that uses PostgreSQL, containerized w
 - [📜 API Documentation](#-api-documentation)
     - [API Endpoints (Router-based)](#api-endpoints-router-based)
     - [HTML-Based Views (Template Views)](#html-based-views-template-views)
+- [📝 Test Documentation](#📝-test-documentation)
 - [📊 Logging & Debugging](#-logging--debugging)
 ---
 ## 🚀 Setup Instructions
@@ -26,6 +27,7 @@ Run the following commands to securely store database credentials:
 ```sh
 echo "$SECRET_KEY" | docker secret create secret_key -
 echo "$DATABASE_NAME" | docker secret create db_name -
+echo "$TEST_DATABASE_NAME" | docker secret create test_db_name -
 echo "$DATABASE_USER" | docker secret create db_user -
 echo "$DATABASE_PASSWORD" | docker secret create db_password -
 echo "$DATABASE_HOST" | docker secret create db_host -
@@ -178,7 +180,6 @@ curl -X GET http://localhost:8000/api/categories/
 
 ---
 
-
 ## ⚡ Performance Optimizations
 ✅ Bulk Insert & Update: Uses `bulk_create()` and `bulk_update()` to reduce DB queries.
 
@@ -198,7 +199,7 @@ Category Hierarchy | Manual setup | Auto-parent creation 🏷️
 
 ### API Endpoints (Router-based)
 
-These are registered with Django REST framework’s DefaultRouter, meaning they provide CRUD operations automatically.
+These are registered with Django REST framework’s DefaultRouter, meaning they provide CRUD operations automatically. Test cases exist for validating API responses.
 
 | Endpoint | ViewSet | Description |
 |----------|---------|-------------|
@@ -247,7 +248,6 @@ curl -X GET http://localhost:8000/api/categories/
 curl -X GET "http://localhost:8000/api/products/?category=bedroom"
 ```
 
-
 ### HTML-Based Views (Template Views)
 
 These endpoints render HTML templates for product management.
@@ -259,6 +259,33 @@ These endpoints render HTML templates for product management.
 | `/html/product/edit/<int:pk>/` | EditProductView | Edit Product Page (form-based) |
 | `/html/product/delete/<int:pk>/` | DeleteProductView | Delete Confirmation Page |
 | `/html/product/add/` | AddProductView | Add New Product Page |
+
+---
+
+## 📝 Test Documentation
+
+### **Running Tests**
+```sh
+pytest -v
+```
+
+### **Running Specific Tests**
+```sh
+pytest -v tests/api/test_categories.py
+```
+
+### **Using `--create-db`**
+Use this option for a fresh test database.
+
+### **Test Coverage**
+```sh
+pytest --cov=apps
+```
+
+### **Testing with Docker**
+```sh
+docker exec -it $(docker ps -q --filter name=web) poetry run pytest
+```
 
 ---
 
@@ -275,4 +302,3 @@ tail -f logs/django_warn.log
 ```
 
 This **helps debugging** and makes log access clear.
-
