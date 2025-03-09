@@ -18,11 +18,13 @@ services:
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
       SECRET_KEY: /run/secrets/secret_key
+      DATABASE_TEST_NAME_FILE: /run/secrets/test_db_name
     secrets:
       - secret_key
       - db_name
       - db_user
       - db_password
+      - test_db_name
     volumes:
       - .:/app
       - /app/.venv
@@ -40,10 +42,12 @@ services:
       - db_name
       - db_user
       - db_password
+      - test_db_name
     environment:
       POSTGRES_DB_FILE: /run/secrets/db_name
       POSTGRES_USER_FILE: /run/secrets/db_user
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      POSTGRES_DB_TEST_FILE: /run/secrets/test_db_name
     ports:
       - "5432:5432"
     volumes:
@@ -75,11 +79,13 @@ services:
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
       SECRET_KEY: /run/secrets/secret_key
+      DATABASE_TEST_NAME_FILE: /run/secrets/test_db_name
     secrets:
       - secret_key
       - db_name
       - db_user
       - db_password
+      - test_db_name
     networks:
       - django_crawler_network
 
@@ -99,14 +105,15 @@ services:
       CELERY_BROKER_URL: redis://redis:6379/0
       CELERY_RESULT_BACKEND: redis://redis:6379/0
       SECRET_KEY: /run/secrets/secret_key
+      DATABASE_TEST_NAME_FILE: /run/secrets/test_db_name
     secrets:
       - secret_key
       - db_name
       - db_user
       - db_password
+      - test_db_name
     networks:
       - django_crawler_network
-
 
 volumes:
   postgres_data:
@@ -119,4 +126,6 @@ secrets:
   db_user:
     external: true
   db_password:
+    external: true
+  test_db_name:
     external: true
